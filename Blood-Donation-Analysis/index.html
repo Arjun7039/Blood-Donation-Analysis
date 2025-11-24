@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Donation Prediction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #ff416c;
+            box-shadow: 0 0 0 2px rgba(255, 65, 108, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result-container {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .result-value {
+            font-size: 24px;
+            font-weight: 700;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .will-donate {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .will-not-donate {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .info-section {
+            background-color: #f1f8ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 25px;
+        }
+
+        .info-section h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .info-section ul {
+            padding-left: 20px;
+        }
+
+        .info-section li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #ff416c;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Blood Donation Prediction</h1>
+            <p>Predict if a person will donate blood in March 2007</p>
+        </div>
+        
+        <div class="form-container">
+            <form id="predictionForm">
+                <div class="input-group">
+                    <label for="monthsLast">Months since last donation</label>
+                    <input type="number" id="monthsLast" placeholder="Enter months" min="0" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="numDonations">Number of donations</label>
+                    <input type="number" id="numDonations" placeholder="Enter number" min="0" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="totalVolume">Total volume donated (c.c.)</label>
+                    <input type="number" id="totalVolume" placeholder="Enter volume" min="0" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="monthsFirst">Months since first donation</label>
+                    <input type="number" id="monthsFirst" placeholder="Enter months" min="0" required>
+                </div>
+                
+                <button type="submit" class="btn">Predict Donation</button>
+            </form>
+            
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analyzing data...</p>
+            </div>
+            
+            <div id="resultContainer" class="result-container">
+                <div class="result-title">Prediction Result:</div>
+                <div id="resultValue" class="result-value"></div>
+            </div>
+            
+            <div class="info-section">
+                <h3>About This Model</h3>
+                <ul>
+                    <li>Uses XGBoost algorithm with 83% accuracy</li>
+                    <li>Trained on historical blood donation data</li>
+                    <li>Handles class imbalance using SMOTE technique</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const monthsLast = parseFloat(document.getElementById('monthsLast').value);
+            const numDonations = parseFloat(document.getElementById('numDonations').value);
+            const totalVolume = parseFloat(document.getElementById('totalVolume').value);
+            const monthsFirst = parseFloat(document.getElementById('monthsFirst').value);
+            
+            // Show loading state
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultContainer').style.display = 'none';
+            document.querySelector('.btn').disabled = true;
+            
+            try {
+                // Send data to backend API
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        monthsLast: monthsLast,
+                        numDonations: numDonations,
+                        totalVolume: totalVolume,
+                        monthsFirst: monthsFirst
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                
+                if (response.ok) {
+                    // Display result
+                    const resultContainer = document.getElementById('resultContainer');
+                    const resultValue = document.getElementById('resultValue');
+                    
+                    resultValue.textContent = data.prediction;
+                    
+                    // Apply appropriate styling
+                    resultValue.className = 'result-value';
+                    if (data.prediction === 'Will Donate') {
+                        resultValue.classList.add('will-donate');
+                    } else {
+                        resultValue.classList.add('will-not-donate');
+                    }
+                    
+                    resultContainer.style.display = 'block';
+                } else {
+                    throw new Error(data.error || 'Prediction failed');
+                }
+            } catch (error) {
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                
+                // Show error
+                const resultContainer = document.getElementById('resultContainer');
+                const resultValue = document.getElementById('resultValue');
+                
+                resultValue.textContent = 'Error: ' + error.message;
+                resultValue.className = 'result-value';
+                resultValue.style.backgroundColor = '#ffebee';
+                resultValue.style.color = '#c62828';
+                
+                resultContainer.style.display = 'block';
+            } finally {
+                // Re-enable button
+                document.querySelector('.btn').disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
